@@ -13,6 +13,7 @@ axum = { version = "0.7.9", features = [
 serde = { version = "1.0.215", features = ["derive"] }
 serde_yaml = "0.9.34"
 sqlx = { version = "0.8.2", features = [
+  "chrono",
   "postgres",
   "runtime-tokio",
   "tls-rustls",
