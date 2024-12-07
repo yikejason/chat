@@ -41,3 +41,10 @@ server:
 ### argon2 password hash  lattery generate hash
 - Slow hash generation to hash password brute-force attacks
 - argon2 hash's length is 97
+
+### openssl generate KeyPair
+- use Ed25519 algorithm to generate private.pem `openssl genpkey -algorithm ed25519 -out private.pem`
+- generate public pem `openssl pkey -in private.pem -pubout -out public.pem`
+
+### test idea
+- if you meet some bugs in your test, you can write some unit tests to test it. (如果在测试或者手工测试中报错一些问题，应该写一个单元测试把这个问题给覆盖下来)
