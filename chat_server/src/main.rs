@@ -8,7 +8,7 @@ use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Lay
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let layer = fmt::layer().pretty().with_filter(LevelFilter::INFO);
+    let layer = fmt::layer().with_filter(LevelFilter::INFO);
     tracing_subscriber::registry().with(layer).init();
 
     let config = AppConfig::load()?;

@@ -48,3 +48,8 @@ server:
 
 ### test idea
 - if you meet some bugs in your test, you can write some unit tests to test it. (如果在测试或者手工测试中报错一些问题，应该写一个单元测试把这个问题给覆盖下来)
+
+### middlewares
+- process something in your request and response
+
+### uuid7 remcomend
