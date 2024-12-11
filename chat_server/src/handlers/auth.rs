@@ -47,7 +47,7 @@ mod tests {
     async fn signup_should_work() -> Result<()> {
         let config = AppConfig::load()?;
         let (_tdb, state) = AppState::new_for_test(config).await?;
-        let input = CreateUser::new("none", "Yu Tian", "yu@acme.org", "hunter42");
+        let input = CreateUser::new("none", "tian yu", "yut@acme.org", "123456");
         let ret = signup_handler(State(state), Json(input))
             .await?
             .into_response();
@@ -62,9 +62,8 @@ mod tests {
     async fn signup_duplicate_user_should_409() -> Result<()> {
         let config = AppConfig::load()?;
         let (_tdb, state) = AppState::new_for_test(config).await?;
-        let input = CreateUser::new("none", "Yu Tian", "yu@acme.org", "hunter42");
-        signup_handler(State(state.clone()), Json(input.clone())).await?;
-        let ret = signup_handler(State(state.clone()), Json(input.clone()))
+        let input = CreateUser::new("acme", "Yu Tian", "yu@acme.org", "123456");
+        let ret = signup_handler(State(state), Json(input))
             .await
             .into_response();
         assert_eq!(ret.status(), StatusCode::CONFLICT);
@@ -78,10 +77,9 @@ mod tests {
     async fn signin_should_work() -> Result<()> {
         let config = AppConfig::load()?;
         let (_tdb, state) = AppState::new_for_test(config).await?;
-        let email = "alice@acme.org";
-        let password = "hunter42";
-        let user = CreateUser::new("none", "Alice", email, password);
-        User::create(&user, &state.pool).await?;
+        let email = "yu@acme.org";
+        let password = "123456";
+
         let input = SigninUser::new(email, password);
         let ret = signin_handler(State(state), Json(input))
             .await?
@@ -94,11 +92,11 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn signin_invalid_password_should_403() -> Result<()> {
+    async fn signin_non_exist_user_should_403() -> Result<()> {
         let config = AppConfig::load()?;
         let (_tdb, state) = AppState::new_for_test(config).await?;
-        let email = "alice@acme.org";
-        let password = "hunter42";
+        let email = "yu1@acme.org";
+        let password = "123456";
         let input = SigninUser::new(email, password);
         let ret = signin_handler(State(state), Json(input))
             .await

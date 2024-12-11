@@ -94,32 +94,52 @@ impl fmt::Debug for AppStateInner {
 }
 
 #[cfg(test)]
-impl AppState {
-    pub async fn new_for_test(
-        config: AppConfig,
-    ) -> Result<(sqlx_db_tester::TestPg, Self), AppError> {
-        let ek = EncodingKey::load(&config.auth.sk)?;
-        let dk = DecodingKey::load(&config.auth.pk)?;
-        let server_url = config
-            .server
-            .db_url
-            .split('/')
-            .take(3)
-            .collect::<Vec<&str>>()
-            .join("/");
-        let tdb = sqlx_db_tester::TestPg::new(
-            server_url.to_string(),
-            std::path::Path::new("../migrations"),
-        );
-        let pool = tdb.get_pool().await;
-        let state = Self {
-            inner: Arc::new(AppStateInner {
-                config,
-                ek,
-                dk,
-                pool,
-            }),
+mod test_util {
+    use std::path::Path;
+
+    use super::*;
+    use sqlx::{Executor, PgPool};
+    use sqlx_db_tester::TestPg;
+
+    impl AppState {
+        pub async fn new_for_test(config: AppConfig) -> Result<(TestPg, Self), AppError> {
+            let ek = EncodingKey::load(&config.auth.sk)?;
+            let dk = DecodingKey::load(&config.auth.pk)?;
+            let pos = config.server.db_url.rfind('/').expect("invalid db_url");
+            let server_url = &config.server.db_url[..pos];
+            let (tdb, pool) = get_test_pool(Some(server_url)).await;
+            let state = Self {
+                inner: Arc::new(AppStateInner {
+                    config,
+                    ek,
+                    dk,
+                    pool,
+                }),
+            };
+            Ok((tdb, state))
+        }
+    }
+
+    pub async fn get_test_pool(url: Option<&str>) -> (TestPg, PgPool) {
+        let url = match url {
+            Some(url) => url.to_string(),
+            None => "postgres://postgres:password@localhost:5432".to_string(),
         };
-        Ok((tdb, state))
+        let tdb = TestPg::new(url, Path::new("../migrations"));
+        let pool = tdb.get_pool().await;
+
+        // run prepareed sql to insert data  include_str! macro to read file
+        let sql = include_str!("../fixtures/test.sql").split(";");
+        // run sql and use sqlx transaction
+        let mut ts = pool.begin().await.expect("begin transaction failed");
+        for q in sql {
+            if q.trim().is_empty() {
+                continue;
+            }
+            ts.execute(q).await.expect("execute sql failed");
+        }
+        ts.commit().await.expect("commit transaction failed");
+
+        (tdb, pool)
     }
 }
