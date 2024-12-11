@@ -92,8 +92,36 @@ impl User {
     }
 }
 
+#[allow(dead_code)]
 impl ChatUser {
-    //pub async fn fetch_all(user: &User)
+    pub async fn fetch_by_ids(ids: &[i64], pool: &PgPool) -> Result<Vec<Self>, AppError> {
+        // where id = ANY($1)  $1 is an array of ids  id is in the array
+        let users = sqlx::query_as(
+            r#"
+        SELECT id, ws_id, fullname, email, created_at
+        FROM users
+        WHERE id = ANY($1)
+        "#,
+        )
+        .bind(ids)
+        .fetch_all(pool)
+        .await?;
+        Ok(users)
+    }
+
+    pub async fn fetch_all(ws_id: u64, pool: &PgPool) -> Result<Vec<Self>, AppError> {
+        let users = sqlx::query_as(
+            r#"
+        SELECT id, ws_id, fullname, email, created_at
+        FROM users
+        WHERE ws_id = $1
+        "#,
+        )
+        .bind(ws_id as i64)
+        .fetch_all(pool)
+        .await?;
+        Ok(users)
+    }
 }
 
 fn hash_password(password: &str) -> Result<String, AppError> {

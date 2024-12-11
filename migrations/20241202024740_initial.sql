@@ -20,11 +20,10 @@ CREATE TYPE chat_type AS ENUM ('single', 'group', 'private_channel', 'public_cha
 
 -- create chat table
 CREATE TABLE IF NOT EXISTS chats (
-    id serial PRIMARY KEY,
+    id bigserial PRIMARY KEY, -- bigserial is also i64 size （int8）  serial is int4
     name varchar(64),     -- if it is single chat, chat name can be null
     type chat_type NOT NULL,
-    -- user id list
-    members bigint[] NOT NULL,
+    members bigint[] NOT NULL,  -- user id list
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -16,6 +16,12 @@ pub enum AppError {
     #[error("email already exists: {0}")]
     EmailAlreadyExists(String),
 
+    #[error("create chat error: {0}")]
+    CreateChatError(String),
+
+    #[error("not found: {0}")]
+    NotFound(String),
+
     #[error("sqlx error: {0}")]
     SqlxError(#[from] sqlx::Error),
 
@@ -41,6 +47,8 @@ impl IntoResponse for AppError {
             AppError::PasswordHashError(_) => StatusCode::UNPROCESSABLE_ENTITY,
             AppError::JwtError(_) => StatusCode::FORBIDDEN,
             AppError::EmailAlreadyExists(_) => StatusCode::CONFLICT,
+            AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
+            AppError::NotFound(_) => StatusCode::NOT_FOUND,
         };
         (status, Json(ErrorOutPut::new(self.to_string()))).into_response()
     }
