@@ -30,6 +30,9 @@ pub enum AppError {
 
     #[error("jwt error: {0}")]
     JwtError(#[from] jwt_simple::Error),
+
+    #[error("io error: {0}")]
+    IoError(#[from] std::io::Error),
 }
 
 impl ErrorOutPut {
@@ -49,6 +52,7 @@ impl IntoResponse for AppError {
             AppError::EmailAlreadyExists(_) => StatusCode::CONFLICT,
             AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
+            AppError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
         (status, Json(ErrorOutPut::new(self.to_string()))).into_response()
     }
