@@ -13,6 +13,12 @@ pub struct ErrorOutPut {
 
 #[derive(Debug, Error)]
 pub enum AppError {
+    #[error("{0}")]
+    ChatFileError(String),
+
+    #[error("create message error: {0}")]
+    CreateMessageError(String),
+
     #[error("email already exists: {0}")]
     EmailAlreadyExists(String),
 
@@ -53,6 +59,8 @@ impl IntoResponse for AppError {
             AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
             AppError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::CreateMessageError(_) => StatusCode::BAD_REQUEST,
+            AppError::ChatFileError(_) => StatusCode::BAD_REQUEST,
         };
         (status, Json(ErrorOutPut::new(self.to_string()))).into_response()
     }
