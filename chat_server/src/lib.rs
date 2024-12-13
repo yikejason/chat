@@ -110,7 +110,8 @@ mod test_util {
     use sqlx_db_tester::TestPg;
 
     impl AppState {
-        pub async fn new_for_test(config: AppConfig) -> Result<(TestPg, Self), AppError> {
+        pub async fn new_for_test() -> Result<(TestPg, Self), AppError> {
+            let config = AppConfig::load()?;
             let ek = EncodingKey::load(&config.auth.sk)?;
             let dk = DecodingKey::load(&config.auth.pk)?;
             let pos = config.server.db_url.rfind('/').expect("invalid db_url");
