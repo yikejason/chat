@@ -5,8 +5,8 @@ Content-Type: application/json
 
 {
     "workspace": "acme",
-    "fullname": "alice",
-    "email": "alice@acme.org",
+    "fullname": "Yu Tian",
+    "email": "yu@acme.org",
     "password": "123456"
 }
 
