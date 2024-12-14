@@ -4,12 +4,32 @@
 CREATE TABLE IF NOT EXISTS users (
     -- bigserial is also i64 size
     id bigserial PRIMARY KEY,
+    ws_id bigint NOT NULL,
     fullname varchar(64) NOT NULL,
     email varchar(64) NOT NULL,
     -- hashed argon2 password, length is 97
     password_hash varchar(97) NOT NULL,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP
 );
+
+-- workspace for users
+CREATE TABLE IF NOT EXISTS workspaces(
+    id bigserial PRIMARY KEY,
+    name varchar(32) NOT NULL UNIQUE,
+    owner_id bigint NOT NULL REFERENCES users(id),
+    created_at timestamptz DEFAULT CURRENT_TIMESTAMP
+);
+
+BEGIN;
+    INSERT INTO users(id, ws_id, fullname, email, password_hash)
+    VALUES (0, 0, 'super user', 'super@none.org', '');
+    INSERT INTO workspaces(id, name, owner_id)
+    VALUES (0, 'none', 0);
+COMMIT;
+
+-- add foreign key constraint for ws_id for users
+ALTER TABLE users
+    ADD CONSTRAINT users_ws_id_fk FOREIGN KEY (ws_id) REFERENCES workspaces(id);
 
 -- create index for users for email
 CREATE UNIQUE INDEX IF NOT EXISTS email_index ON users(email);
@@ -20,10 +40,11 @@ CREATE TYPE chat_type AS ENUM ('single', 'group', 'private_channel', 'public_cha
 
 -- create chat table
 CREATE TABLE IF NOT EXISTS chats (
-    id bigserial PRIMARY KEY, -- bigserial is also i64 size （int8）  serial is int4
+id bigserial PRIMARY KEY, -- bigserial is also i64 size （int8）  serial is int4
+    ws_id bigint NOT NULL REFERENCES workspaces(id),
     name varchar(64),     -- if it is single chat, chat name can be null
     type chat_type NOT NULL,
-    members bigint[] NOT NULL,  -- user id list
+    members bigint[] NOT NULL DEFAULT '{}',  -- user id list
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP
 );
 
