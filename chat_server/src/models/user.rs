@@ -34,6 +34,17 @@ impl AppState {
         Ok(user)
     }
 
+    // find a user by id
+    pub async fn find_user_by_id(&self, id: i64) -> Result<Option<User>, AppError> {
+        let user = sqlx::query_as(
+            "SELECT id, ws_id, fullname, email, created_at FROM users WHERE id = $1",
+        )
+        .bind(id)
+        .fetch_optional(&self.pool)
+        .await?;
+        Ok(user)
+    }
+
     /// Create a new user
     /// TODO: use transaction for workspace creation and user creation
     pub async fn create_user(&self, input: &CreateUser) -> Result<User, AppError> {
@@ -234,6 +245,16 @@ mod tests {
         let user = state.verify_user(&input).await?;
         assert!(user.is_some());
 
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn find_user_by_id_should_work() -> Result<()> {
+        let (_tdb, state) = AppState::new_for_test().await?;
+        let user = state.find_user_by_id(1).await?;
+        assert!(user.is_some());
+        let user = user.unwrap();
+        assert_eq!(user.id, 1);
         Ok(())
     }
 }

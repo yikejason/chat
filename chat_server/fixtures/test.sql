@@ -21,3 +21,15 @@ VALUES (1, 'general', 'public_channel', '{1,2,3}'),
 INSERT INTO chats (ws_id, type, members)
 VALUES (1, 'single', '{1,2}'),
 (1, 'group', '{1,2,3}');
+
+INSERT INTO messages(chat_id, sender_id, content)
+  VALUES (1, 1, 'Hello, world!'),
+(1, 2, 'Hi, there!'),
+(1, 3, 'How are you?'),
+(1, 1, 'I am fine, thank you!'),
+(1, 2, 'Good to hear that!'),
+(1, 1, 'Hello, world!'),
+(1, 2, 'Hi, there!'),
+(1, 3, 'How are you?'),
+(1, 1, 'Hello, world!'),
+(1, 1, 'Hello, world!');
