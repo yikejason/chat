@@ -24,11 +24,15 @@ CREATE TRIGGER add_to_chat_trigger
 CREATE OR REPLACE FUNCTION add_to_message()
   RETURNS TRIGGER
   AS $$
+  DECLARE
+    USERS bigint[]; -- declare variable USERS as array of bigint
 BEGIN
     IF TG_OP = 'INSERT' THEN
       RAISE NOTICE 'added to message: %', NEW;
+      -- select chat with chat_id in New
+      SELECT members INTO USERS FROM chats WHERE id = NEW.chat_id; -- SELECT ... INTO ... is used to assign a value to a variable USERS
       PERFORM
-        pg_notify('chat_message_created', row_to_json(NEW)::text);
+        pg_notify('chat_message_created', json_build_object('message', NEW, 'members', USERS)::text);
     END IF;
     RETURN NEW;
 END;

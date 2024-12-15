@@ -8,10 +8,25 @@
 <body>
   <h1>Notify Server</h1>
   <script>
-  var eventSource = new EventSource('sse');
-  eventSource.onmessage = function(event) {
-      console.log('Message from server ', event.data);
-  };
+  var source = new EventSource("/events");
+      source.onmessage = function(event) {
+        console.log("Got:", event.data);
+      };
+      source.addEventListener("NewChat", function(event) {
+        console.log("NewChat:", event.data);
+      });
+
+      source.addEventListener("AddToChat", function(event) {
+        console.log("AddToChat:", event.data);
+      });
+
+      source.addEventListener("RemoveFromChat", function(event) {
+        console.log("RemoveFromChat:", event.data);
+      });
+
+      source.addEventListener("NewMessage", function(event) {
+        console.log("NewMessage:", event.data);
+      });
   </script>
 </body>
 </html>

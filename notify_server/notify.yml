@@ -1,0 +1,8 @@
+server:
+  port: 6687
+  db_url: "postgres://postgres:postgres@localhost:5432/chat"
+auth:
+  pk: | # Public key | this mark represents multiple strings
+    -----BEGIN PUBLIC KEY-----
+    MCowBQYDK2VwAyEAEfi+d22aTrayK6L0trHhNVvba06HCnzrlsDjuOawoaE=
+    -----END PUBLIC KEY-----
