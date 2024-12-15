@@ -1,12 +1,10 @@
+use super::ChatFile;
+use crate::AppError;
+use sha1::{Digest, Sha1};
 use std::{
     path::{Path, PathBuf},
     str::FromStr,
 };
-
-use crate::AppError;
-
-use super::ChatFile;
-use sha1::{Digest, Sha1};
 
 impl ChatFile {
     pub fn new(ws_id: u64, filename: &str, data: &[u8]) -> Self {

@@ -4,7 +4,8 @@ use axum::{
     response::{IntoResponse, Response},
 };
 
-use crate::{AppError, AppState, User};
+use crate::{AppError, AppState};
+use chat_core::User;
 
 pub async fn verify_chat(State(state): State<AppState>, req: Request, next: Next) -> Response {
     let (mut parts, body) = req.into_parts();
@@ -52,7 +53,7 @@ mod tests {
         let app = Router::new()
             .route("/chat/:id/messages", get(handler))
             .layer(from_fn_with_state(state.clone(), verify_chat))
-            .layer(from_fn_with_state(state.clone(), verify_token)) // note: see axum middleware's  execute layer image in docs, you can learn how to use it
+            .layer(from_fn_with_state(state.clone(), verify_token::<AppState>)) // note: see axum middleware's  execute layer image in docs, you can learn how to use it
             .with_state(state);
 
         // user in chat
