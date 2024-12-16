@@ -53,6 +53,8 @@ pub async fn setup_pg_listener(state: AppState) -> anyhow::Result<()> {
             for user_id in notification.user_ids {
                 if let Some(tx) = users.get(&user_id) {
                     info!("Sending notification to user {}", user_id);
+
+                    // tx.send(notification.event.clone()) is first to execute, if return Ok, it will not execute the if let, if return Err, it will execute the if let
                     if let Err(e) = tx.send(notification.event.clone()) {
                         warn!("Failed to send notification to user {}: {}", user_id, e);
                     }

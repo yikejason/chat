@@ -8,7 +8,8 @@
 <body>
   <h1>Notify Server</h1>
   <script>
-  var source = new EventSource("/events");
+  let token = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzQzMTg1NjUsImV4cCI6MTczNDkyMzM2NSwibmJmIjoxNzM0MzE4NTY1LCJpc3MiOiJjaGF0X3NlcnZlciIsImF1ZCI6ImNoYXRfd2ViIiwiaWQiOjEsIndzX2lkIjoxLCJmdWxsbmFtZSI6Ill1IFRpYW4iLCJlbWFpbCI6Inl1QGFjbWUub3JnIiwiY3JlYXRlZF9hdCI6IjIwMjQtMTItMTZUMDI6MzI6NDcuOTQwOTIxWiJ9.C59tAitssIWFieNFUYwfjaIJANEhWbzZQE8yeu8h6iQnuvL-DVabUSPbnsgdoR8GzR6zVXP8vXR081gPrL0dCQ";
+  let source = new EventSource(`/events/?access_token=${token}`);
       source.onmessage = function(event) {
         console.log("Got:", event.data);
       };

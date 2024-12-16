@@ -40,7 +40,7 @@ CREATE TYPE chat_type AS ENUM ('single', 'group', 'private_channel', 'public_cha
 
 -- create chat table
 CREATE TABLE IF NOT EXISTS chats (
-id bigserial PRIMARY KEY, -- bigserial is also i64 size （int8）  serial is int4
+    id bigserial PRIMARY KEY, -- bigserial is also i64 size （int8）  serial is int4
     ws_id bigint NOT NULL REFERENCES workspaces(id),
     name varchar(64),     -- if it is single chat, chat name can be null
     type chat_type NOT NULL,
