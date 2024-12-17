@@ -44,9 +44,7 @@ impl TokenVerify for AppState {
     }
 }
 
-pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
-    let state = AppState::try_new(config).await?;
-
+pub async fn get_router(state: AppState) -> Result<Router, AppError> {
     let chat = Router::new()
         .route(
             "/:id",
@@ -115,7 +113,7 @@ impl fmt::Debug for AppStateInner {
     }
 }
 
-#[cfg(test)]
+#[cfg(feature = "test-util")] // let other modules use test_util, you can write #[cfg(feature = "test-util")] instead
 mod test_util {
     use std::path::Path;
 

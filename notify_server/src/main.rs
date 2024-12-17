@@ -1,7 +1,7 @@
 use std::net::SocketAddr;
 
 use anyhow::Result;
-use notify_server::{get_router, setup_pg_listener, AppConfig};
+use notify_server::{get_router, AppConfig};
 use tokio::net::TcpListener;
 use tracing::{info, level_filters::LevelFilter};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Layer};
@@ -14,9 +14,7 @@ async fn main() -> Result<()> {
     let config = AppConfig::load()?;
     let addr = SocketAddr::from(([0, 0, 0, 0], config.server.port));
 
-    let (app, state) = get_router(config);
-
-    setup_pg_listener(state).await?;
+    let app = get_router(config).await?;
 
     let listener = TcpListener::bind(&addr).await?;
     info!("Listening on: {}", addr);
