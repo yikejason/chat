@@ -7,9 +7,18 @@ use axum::{
 use tokio::fs;
 use tracing::{info, warn};
 
-use crate::{AppError, AppState, ChatFile, CreateMessage, ListMessages};
-use chat_core::User;
+use crate::{AppError, AppState, ChatFile, CreateMessage, ErrorOutPut, ListMessages};
+use chat_core::{Chat, User};
 
+/// List all messages in the chat.
+#[utoipa::path(
+    get,
+    path = "/api/chats/:id/messages",
+    responses(
+        (status = 200, description = "List all messages", body = Vec<Chat>),
+    ),
+    security(("token" = []))
+)]
 pub(crate) async fn list_message_handler(
     State(state): State<AppState>,
     Path(id): Path<u64>,
@@ -19,6 +28,15 @@ pub(crate) async fn list_message_handler(
     Ok(Json(messages))
 }
 
+/// Create a new message in the chat.
+#[utoipa::path(
+    post,
+    path = "/api/chats/:id/messages",
+    responses(
+        (status = 201, description = "Message created", body = Chat),
+    ),
+    security(("token" = []))
+)]
 pub(crate) async fn send_message_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
@@ -28,7 +46,16 @@ pub(crate) async fn send_message_handler(
     let msg = state.create_message(input, id, user.id as u64).await?;
     Ok((StatusCode::CREATED, Json(msg)))
 }
-
+/// file_handler is used to serve files from the server.
+#[utoipa::path(
+    get,
+    path = "/api/ws/:ws_id/files/*path",
+    responses(
+        (status = 200, description = "File found", body = Vec<u8>),
+        (status = 404, description = "File not found", body = ErrorOutPut),
+    ),
+    security(("token" = []))
+)]
 pub(crate) async fn file_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
@@ -55,6 +82,15 @@ pub(crate) async fn file_handler(
     Ok((headers, body))
 }
 
+/// upload_handler is used to upload files to the server.
+#[utoipa::path(
+    post,
+    path = "/api/ws/:ws_id/files",
+    responses(
+        (status = 200, description = "File uploaded", body = Vec<String>),
+    ),
+    security(("token" = []))
+)]
 pub(crate) async fn upload_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,

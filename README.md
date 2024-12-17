@@ -53,3 +53,5 @@ server:
 - process something in your request and response
 
 ### uuid7 remcomend
+
+### use aws smithy generate swagger but this project generate swgger ui use utoipa crate

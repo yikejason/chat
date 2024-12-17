@@ -1,12 +1,21 @@
-use crate::{AppError, AppState, CreateChat};
+use crate::{AppError, AppState, CreateChat, ErrorOutPut};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
     Extension, Json,
 };
-use chat_core::User;
+use chat_core::{Chat, User};
 
+/// List all chats in the workspace of the user.
+#[utoipa::path(
+    get,
+    path = "/api/chats",
+    responses(
+        (status = 200, description = "List all chat", body = Vec<Chat>),
+    ),
+    security(("token" = []))
+)]
 pub(crate) async fn list_chat_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
@@ -15,6 +24,15 @@ pub(crate) async fn list_chat_handler(
     Ok((StatusCode::OK, Json(chat)))
 }
 
+/// create a new chat in the workspace of the user.
+#[utoipa::path(
+    post,
+    path = "/api/chats",
+    responses(
+        (status = 201, description = "Chat created", body = Chat),
+    ),
+    security(("token" = []))
+)]
 pub(crate) async fn create_chat_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
@@ -24,6 +42,16 @@ pub(crate) async fn create_chat_handler(
     Ok((StatusCode::CREATED, Json(chat)))
 }
 
+/// Get a chat by id.
+#[utoipa::path(
+    get,
+    path = "/api/chats/:id",
+    responses(
+        (status = 200, description = "Chat found", body = Chat),
+        (status = 404, description = "Chat not found", body = ErrorOutPut),
+    ),
+    security(("token" = []))
+)]
 pub(crate) async fn get_chat_handler(
     State(state): State<AppState>,
     Path(id): Path<u64>,

@@ -16,3 +16,4 @@ tracing = { workspace = true }
 uuid = { workspace = true }
 jwt-simple = { workspace = true }
 sqlx = { workspace = true }
+utoipa = { version = "5.2.0", features = ["axum_extras", "chrono"] }
