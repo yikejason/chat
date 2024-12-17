@@ -51,7 +51,7 @@ async fn chat_server_should_work() -> Result<()> {
     let db_url = tdb.url();
     NotifyServer::new(&db_url, &chat_server.token).await?;
     let chat = chat_server.create_chat().await?;
-    let _message = chat_server.create_message(chat.id as i64).await?;
+    let _message = chat_server.create_message(chat.id).await?;
     sleep(Duration::from_secs(1)).await;
     Ok(())
 }
