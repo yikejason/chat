@@ -155,6 +155,11 @@ impl ChatServer {
 
     async fn create_message(&self, chat_id: i64) -> Result<Message> {
         // upload file
+        // include_bytes! is a macro that reads the file at compile time , it does not IO operation
+        // Part::file has a method that can read the file at runtime, it is a IO operation
+        // IO operation is not allowed in const, so we need to use include_bytes! to read the file at compile time
+        // note: if you test in github action, we should use include_bytes! to read the file at compile time
+        // if not, you use Part::file to read the file at runtime, github action perhaps find no file or directory
         let data = include_bytes!("../Cargo.toml");
         let files = Part::bytes(data)
             .file_name("Cargo.toml")
