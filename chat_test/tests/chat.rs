@@ -155,9 +155,9 @@ impl ChatServer {
 
     async fn create_message(&self, chat_id: i64) -> Result<Message> {
         // upload file
-        let files = Part::file("../cargo.toml")
-            .await?
-            .file_name("cargo.toml")
+        let data = include_bytes!("../Cargo.toml");
+        let files = Part::bytes(data)
+            .file_name("Cargo.toml")
             .mime_str("text/plain")?;
         let form = Form::new().part("file", files);
 
