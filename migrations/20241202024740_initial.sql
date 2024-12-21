@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS chats (
     name varchar(64),     -- if it is single chat, chat name can be null
     type chat_type NOT NULL,
     members bigint[] NOT NULL DEFAULT '{}',  -- user id list
-    created_at timestamptz DEFAULT CURRENT_TIMESTAMP
+    created_at timestamptz DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (ws_id, name)
 );
 
 -- create message table
@@ -63,3 +64,6 @@ CREATE INDEX IF NOT EXISTS chat_id_created_at_index ON messages(chat_id, created
 
 -- create index for messages for sender_id
 CREATE INDEX IF NOT EXISTS sender_id_index ON messages(sender_id, created_at DESC);
+
+-- create index for chat members    GIN represents 复杂的 index search  eg: array json etc
+CREATE INDEX IF NOT EXISTS chat_members_index ON chats USING GIN(members);

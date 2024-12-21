@@ -20,7 +20,7 @@ pub(crate) async fn list_chat_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
 ) -> Result<impl IntoResponse, AppError> {
-    let chat = state.fetch_chat_all(user.ws_id as _).await?;
+    let chat = state.fetch_chat_all(user.id as _, user.ws_id as _).await?;
     Ok((StatusCode::OK, Json(chat)))
 }
 
@@ -38,7 +38,9 @@ pub(crate) async fn create_chat_handler(
     State(state): State<AppState>,
     Json(input): Json<CreateChat>,
 ) -> Result<impl IntoResponse, AppError> {
-    let chat = state.create_chat(input, user.ws_id as _).await?;
+    let chat = state
+        .create_chat(input, user.id as _, user.ws_id as _)
+        .await?;
     Ok((StatusCode::CREATED, Json(chat)))
 }
 
