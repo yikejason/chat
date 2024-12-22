@@ -15,7 +15,7 @@ use super::TokenVerify;
 
 #[derive(Debug, Deserialize)]
 struct Params {
-    access_token: String,
+    token: String,
 }
 
 // because AppState is not in the file, so we need to define generic type T
@@ -30,7 +30,7 @@ where
             Err(e) => {
                 if e.is_missing() {
                     match Query::<Params>::from_request_parts(&mut parts, &state).await {
-                        Ok(params) => params.access_token.clone(),
+                        Ok(params) => params.token.clone(),
                         Err(e) => {
                             let msg = format!("parse Authorization header failed {}", e);
                             warn!(msg);
@@ -122,7 +122,7 @@ mod tests {
 
         // good token in params
         let req = Request::builder()
-            .uri(format!("/?access_token={}", token))
+            .uri(format!("/?token={}", token))
             .body(Body::empty())?;
         let res = app.clone().oneshot(req).await?;
         assert_eq!(res.status(), StatusCode::OK);
@@ -142,7 +142,7 @@ mod tests {
 
         // bad token in params
         let req = Request::builder()
-            .uri("/?access_token=bad_token")
+            .uri("/?token=bad_token")
             .body(Body::empty())?;
         let res = app.oneshot(req).await?;
         assert_eq!(res.status(), StatusCode::FORBIDDEN);

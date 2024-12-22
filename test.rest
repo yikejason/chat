@@ -63,12 +63,13 @@ Content-Type: application/json
 # @name signinone
 POST http://localhost:6688/api/signin
 Content-Type: application/json
+
 {
     "email": "bob@acme.org",
     "password": "123456"
 }
 
-@token1 = {{signinone.response.body.token}}
+@token1 = {{ signinone.response.body.token }}
 
 
 
@@ -87,6 +88,7 @@ Authorization: Bearer {{token}}
 POST http://localhost:6688/api/chats
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
 {
     "members": [1, 2],
     "public": false
@@ -96,6 +98,7 @@ Authorization: Bearer {{token}}
 POST http://localhost:6688/api/chats
 Content-Type: application/json
 Authorization: Bearer {{token1}}
+
 {
     "name": "project Y",
     "members": [2, 3],
@@ -106,6 +109,7 @@ Authorization: Bearer {{token1}}
 POST http://localhost:6688/api/chats
 Content-Type: application/json
 Authorization: Bearer {{token1}}
+
 {
     "members": [2, 3],
     "public": false

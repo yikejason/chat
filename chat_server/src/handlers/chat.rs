@@ -44,7 +44,7 @@ pub(crate) async fn create_chat_handler(
     Ok((StatusCode::CREATED, Json(chat)))
 }
 
-/// Get a chat by id.
+/// Get the chat info by id.
 #[utoipa::path(
     get,
     path = "/api/chats/:id",

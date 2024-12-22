@@ -8,7 +8,7 @@ use tokio::fs;
 use tracing::{info, warn};
 
 use crate::{AppError, AppState, ChatFile, CreateMessage, ErrorOutPut, ListMessages};
-use chat_core::{Chat, User};
+use chat_core::{Chat, Message, User};
 
 /// List all messages in the chat.
 #[utoipa::path(
@@ -28,14 +28,20 @@ pub(crate) async fn list_message_handler(
     Ok(Json(messages))
 }
 
-/// Create a new message in the chat.
+/// Send a new message in the chat.
 #[utoipa::path(
     post,
-    path = "/api/chats/:id/messages",
-    responses(
-        (status = 201, description = "Message created", body = Chat),
+    path = "/api/chats/{id}",
+    params(
+        ("id" =  u64, Path, description = "Chat id"),
     ),
-    security(("token" = []))
+    responses(
+        (status = 200, description = "List of messages", body = Message),
+        (status = 400, description = "Invalid input", body = ErrorOutPut),
+    ),
+    security(
+        ("token" = [])
+    )
 )]
 pub(crate) async fn send_message_handler(
     Extension(user): Extension<User>,

@@ -66,7 +66,7 @@ impl NotifyServer {
 
         tokio::spawn(async move { axum::serve(listener, app.into_make_service()).await });
 
-        let mut es = EventSource::get(format!("http://{}/events?access_token={}", addr, token));
+        let mut es = EventSource::get(format!("http://{}/events?token={}", addr, token));
 
         tokio::spawn(async move {
             // if it is a stream, we need to use StreamExt, you can use futures::StreamExt, and then use next() to get the next event
